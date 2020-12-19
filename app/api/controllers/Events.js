@@ -26,9 +26,10 @@ module.exports = {
                     eventsList.push({
                         id: event._id,
                         Tittle: event.Tittle,
-                        created_on: event.created_on,
+                        event_date: event.event_date,
                         Description:event.Description,
                         Eventlocation:event.Eventlocation,
+                        locationCorodiantes:event.locationCorodiantes,
                         category:event.category,
                         tags:event.Tags,
                         UserProfileID:event.UserProfileID
@@ -74,15 +75,23 @@ module.exports = {
         });
     },
     create: function (req, res, next) {
+        console.log(req.body);
         eventModel.create({
-            Tittle:req.body.tittle,
+            tittle:req.body.tittle,
+            imgUrl : req.body.imgUrl,
+            contactInfo :req.body.contactInfo,
+            event_date :req.body.event_date,
             created_on:req.body.created_on,
-            Description:req.body.description,
-            Eventlocation:req.body.EventLocation,
-            category:req.body.category,
-            Tags:req.body.tags,
-            radius:req.body.radius,
-            UserProfileID:req.body.ProfileID
+            Description:req.body.Description,
+            guideLines:req.body.guideLines,
+            Eventlocation:req.body.Eventlocation,
+            City:req.body.currentcity,
+            locationCorodiantes :req.body.locationCorodiantes,
+            event_category:req.body.event_category,
+            Tags:req.body.Tags,
+            UserProfileID:req.body.UserProfileID,
+            aditionalImgOrVideo :req.body.aditionalImgOrVideo
+
         }, function (err, result) {
             if (err)
                 next(err);

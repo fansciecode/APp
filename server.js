@@ -3,10 +3,12 @@ const logger = require('morgan');
 const Events = require('./routes/Events');
 const Query =require('./routes/query')
 const users = require('./routes/users');
+const locationroute =require('./routes/location');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 var jwt = require('jsonwebtoken');
 const app = express();
+const geolib = require('geolib');
 
 app.set('secretKey', 'nodeRestApi'); // jwt secret token
 // connection to mongodb
@@ -17,16 +19,19 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 
+app.use(bodyParser.json())
 app.get('/', function (req, res) {
     res.json({
         "Welcome": "Welcome to iBC"
     });
 });
 // public route
+
 app.use('/users', users);
 // private route
-app.use('/Events', validateUser, Events);
+app.use('/events', Events);
 app.use('/query',Query);
+app.use('/location',locationroute);
 // app.use('/query/location',Query)
 app.get('/favicon.ico', function (req, res) {
     res.sendStatus(204);

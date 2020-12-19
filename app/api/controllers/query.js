@@ -3,7 +3,6 @@ const userModel = require('../models/users');
 
 module.exports ={
     EventByTag : function(req,res,next){
-        console.log(req.body);
         const reqTag = new RegExp(req.params.tag);
         eventModel.find({Tags:reqTag}, function (err, events) {  
             let queryList =[];   
@@ -35,7 +34,6 @@ module.exports ={
         });
     },
     EventByLocation: function(req,res,next){
-        console.log(req.body);
         const reqTag = new RegExp(req.params.tag);
         eventModel.find({Eventlocation:reqTag}, function (err, events) {  
             let queryList =[];   
@@ -67,7 +65,6 @@ module.exports ={
         });
     },
     EventByCategory: function(req,res,next){
-        console.log(req.body);
         const reqTag = new RegExp(req.params.tag);
         eventModel.find({category:reqTag}, function (err, events) {  
             let queryList =[];   
