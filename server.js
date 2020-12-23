@@ -13,14 +13,13 @@ var firebase = require('firebase');
 
 
 var config = {
-    apiKey: "AIzaSyCnBHi09BsJL9-Olak9ZN9M6eH2DedL7YA",
-    authDomain: "ibcm-63379.firebaseapp.com",
-    databaseURL: "https://ibcm-63379-default-rtdb.firebaseio.com",
-    projectId: "ibcm-63379",
-    storageBucket: "ibcm-63379.appspot.com",
-    messagingSenderId: "452258022685D",
-    appId: "1:452258022685:web:7265cbfdd9258b28790df4",
-    measurementId: "G-BQ3LTH5W4C"
+    apiKey: "AIzaSyCQYqP_C7HugR6WivrHnzMiOmZDOb_P8gc",
+    authDomain: "ibcm-api.firebaseapp.com",
+    databaseURL: "https://ibcm-api-default-rtdb.firebaseio.com",
+    projectId: "ibcm-api",
+    storageBucket: "ibcm-api.appspot.com",
+    messagingSenderId: "713152971783",
+    appId: "1:713152971783:web:0988297e42dba5a23a96a2"
   };
   firebase.initializeApp(config);
 //   firebase.analytics();

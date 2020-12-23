@@ -8,7 +8,7 @@ var ChatSchema = new Schema({
         ref:'Events'
 
     },
-
+    
     sender : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User'

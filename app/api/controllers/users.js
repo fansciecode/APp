@@ -4,6 +4,7 @@ const message = require('../models/Messages');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
+var firebase = require('firebase');
 
 module.exports = {
     create: function (req, res, next) {
@@ -79,19 +80,27 @@ module.exports = {
 
     },
     JoinEvent: function (req, res, next) {
+     var   EventId =req.body.eventId;
+      var  FromdeviceId =req.body.fromdeviceId;
+       var ToDeviceId = req.body.toDeviceId;
+       var FromProfileId = req.body.fromProfileId;
+      var  ToProfileId = req.body.toProfileId;
 
         notify.create({
-                eventId: req.body.eventId,
-                fromdeviceId: req.body.fromdeviceId,
-                toDeviceId: req.body.toDeviceId,
-                fromProfileId: req.body.fromProfileId,
-                toProfileId: req.body.toProfileId
+                eventId: EventId,
+                fromdeviceId: FromdeviceId,
+                toDeviceId: ToDeviceId,
+                fromProfileId: FromProfileId,
+                toProfileId: ToProfileId
             },
             function (err, response) {
 
                 if (err)
                     next(err);
                 else {
+
+                    firebase.database().ref('/Notifications').set({eventID:EventId,fromProfileId:FromProfileId,
+                        fromdeviceId:FromdeviceId,toDeviceId:ToDeviceId,toProfileId:ToProfileId});
                     res.json({
 
                         status: "success",
@@ -119,8 +128,8 @@ module.exports = {
             if (err)
                 next(err)
             else {
-
-
+                firebase.database().ref('/NotificationsResponse').set({notificationId:noitiyId,Status:status,
+                    messageStatus:messagestatus });
                 res.json({
                     status: "success",
                     message: "notification updated succefully",
@@ -135,7 +144,7 @@ module.exports = {
     CreateChat: function (req, res, next) {
         var EventId = req.body.EventID;
         var senderId = req.body.senderID;
-        var isGroupmessage = req.body.isgroupMessage;
+        var isGroupmessage = (req.body.isgroupMessage ) ? 1:0 ;
         var participantsIds = req.body.participantIDs;
 
         message.create({
@@ -148,6 +157,9 @@ module.exports = {
                 if (err)
                     next(err)
                 else {
+                    firebase.database().ref('/createChat').set({eventID:EventId,sender:senderId,
+                        is_group_message: isGroupmessage,participants:{user:participantsIds}});
+
                     res.json({
                         status: "success",
                         Message: "chat created successfully",
@@ -186,7 +198,9 @@ module.exports = {
     },
     ChatMessage: function (req, res, next) {
         var chatID = req.body.ChatID;
+        var EventID =req.body.eventId;
         var senderID = req.body.senderID;
+        var touserID =req.body.toUserID;
         var messagedetails = req.body.message;
 
         message.update({
@@ -205,6 +219,9 @@ module.exports = {
             if (err)
                 next(err)
             else {
+                firebase.database().ref('/chatMessages').set({eventID:EventID,ChatID:chatID,sender:senderID,
+                   messages: {message:messagedetails,user:touserID}});
+
                 res.json({
                     status: "success",
                     Message: "message Sent succefully",
