@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 //Define a schema
 const Schema = mongoose.Schema;
 
+
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -50,6 +51,8 @@ const UserSchema = new Schema({
         trim:false,
         required:false
     }
+
+    
 });
 
 // hash user password before saving into database

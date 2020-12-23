@@ -1,4 +1,6 @@
 const userModel = require('../models/users');
+const notify = require('../models/eventNotification');
+const message = require('../models/Messages');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
@@ -21,7 +23,7 @@ module.exports = {
                 res.json({
                     status: "success",
                     message: "User added successfully!!!",
-                    data: null
+                    data: result
                 });
 
         });
@@ -48,7 +50,7 @@ module.exports = {
                 res.json({
                     status: "success",
                     message: "user profile updated successfully!!!",
-                    data: null
+                    data: result
                 });
         });
     },
@@ -76,13 +78,150 @@ module.exports = {
 
 
     },
+    JoinEvent: function (req, res, next) {
 
+        notify.create({
+                eventId: req.body.eventId,
+                fromdeviceId: req.body.fromdeviceId,
+                toDeviceId: req.body.toDeviceId,
+                fromProfileId: req.body.fromProfileId,
+                toProfileId: req.body.toProfileId
+            },
+            function (err, response) {
+
+                if (err)
+                    next(err);
+                else {
+                    res.json({
+
+                        status: "success",
+                        message: "Join event request subbmitted !!",
+                        data: response
+
+                    })
+                }
+
+            })
+
+    },
+    notifcationReponse: function (req, res, next) {
+        var noitiyId = req.body.notificationID;
+        var status = req.body.status;
+        var messagestatus = status ? 1 : 0;
+        notify.updateOne({
+            _id: noitiyId
+        }, {
+            $set: {
+                status: status,
+                MessageStatus: messagestatus
+            }
+        }, function (err, response) {
+            if (err)
+                next(err)
+            else {
+
+
+                res.json({
+                    status: "success",
+                    message: "notification updated succefully",
+                    data: response
+                })
+            }
+
+
+        })
+
+    },
+    CreateChat: function (req, res, next) {
+        var EventId = req.body.EventID;
+        var senderId = req.body.senderID;
+        var isGroupmessage = req.body.isgroupMessage;
+        var participantsIds = req.body.participantIDs;
+
+        message.create({
+                eventID: EventId,
+                sender: senderId,
+                is_group_message: isGroupmessage,
+                participants: participantsIds
+            },
+            function (err, response) {
+                if (err)
+                    next(err)
+                else {
+                    res.json({
+                        status: "success",
+                        Message: "chat created successfully",
+                        data: response
+
+                    })
+                }
+            })
+
+
+    },
+
+    JoinChat: function (req, res, next) {
+        var ChatID = req.body.ChatID;
+        var UserID = req.body.userID;
+        messages.update({
+            _id: ChatID
+        }, {
+            $push: {
+                participants: {
+                    user: UserID
+                }
+            }
+        }, function (err, response) {
+            if (err)
+                next(err)
+            else {
+                res.json({
+                    status: "success",
+                    Message: "Joined Chat successfully",
+                    data: response
+                })
+            }
+
+        })
+    },
+    ChatMessage: function (req, res, next) {
+        var chatID = req.body.ChatID;
+        var senderID = req.body.senderID;
+        var messagedetails = req.body.message;
+
+        message.update({
+            _id: chatID
+        }, {
+            $push: {
+                messages: {
+                    message: messagedetails,
+                    meta: {
+                        user: senderID,
+                        delivered: false
+                    }
+                }
+            }
+        }, function (err, response) {
+            if (err)
+                next(err)
+            else {
+                res.json({
+                    status: "success",
+                    Message: "message Sent succefully",
+                    data: response
+                })
+            }
+
+        })
+
+
+    },
     updatePassword: function (req, res, next) {
         userModel.updateOne({
             _id: req.body.user_id
         }, {
             $set: {
-                "password": bcrypt.hashSync(req.body.password, saltRounds)
+                password: bcrypt.hashSync(req.body.password, saltRounds)
             }
         }, function (err, result) {
             if (err)
@@ -91,7 +230,7 @@ module.exports = {
                 res.json({
                     status: "success",
                     message: "password updated successfully!!!",
-                    data: null
+                    data: result
                 });
 
         });
@@ -120,8 +259,8 @@ module.exports = {
                 } else {
                     res.json({
                         status: "error",
-                        message: "Invalid email/password!!!",
-                        data: null
+                        message: "Invalid email/password!!!"
+
                     });
                 }
             }
