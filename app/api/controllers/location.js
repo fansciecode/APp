@@ -21,7 +21,8 @@ module.exports = {
                         Eventlocation: event.Eventlocation,
                         category: event.category,
                         tags: event.Tags,
-                        UserProfileID: event.UserProfileID
+                        UserProfileID: event.UserProfileID,
+                        Joincount:event.JoinCount
                     });
                 }
                 res.json({

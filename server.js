@@ -10,6 +10,10 @@ var jwt = require('jsonwebtoken');
 const app = express();
 const geolib = require('geolib');
 var firebase = require('firebase');
+var cluster = require('cluster');
+const http = require('http');
+const terminate = require('../APp/app/api/controllers/terminate');
+const server = http.createServer();
 
 
 var config = {
@@ -92,10 +96,14 @@ app.use(function (err, req, res, next) {
 app.listen(3000, function () {
     console.log('Node server listening on port 3000');
 });
-process.on('uncaughtException', function (err) {
-    console.error((new Date).toUTCString() + ' uncaughtException:', err.message);
-    console.error(err.stack);
-    // Send the error log to your email
-    sendMail(err);
-    process.exit(1);
+const exitHandler = terminate(server, {
+    coredump: false,
+    timeout: 500
   })
+  
+  process.on('uncaughtException', exitHandler(1, 'Unexpected Error'))
+  process.on('unhandledRejection', exitHandler(1, 'Unhandled Promise'))
+  process.on('SIGTERM', exitHandler(0, 'SIGTERM'))
+  process.on('SIGINT', exitHandler(0, 'SIGINT'))
+
+  

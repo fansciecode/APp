@@ -5,12 +5,12 @@ const catSchema = new Schema({
     catId: {
         type: String,
         trim: true,
-        required: true,
+        required: false,
     },
     catName: {
         type: String,
         trim: true,
-        required: true
+        required: false
     }
 });
 module.exports = mongoose.model('categories', catSchema)

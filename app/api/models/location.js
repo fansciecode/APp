@@ -10,7 +10,7 @@ const LocationSchema = new Schema({
             longitude :String
         },
         trim: false,
-        required: true,
+        required: false,
      }
 });
 module.exports = mongoose.model('LocationSchema', LocationSchema);

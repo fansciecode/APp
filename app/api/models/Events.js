@@ -5,12 +5,12 @@ const EventSchema = new Schema({
     tittle: {
         type: String,
         trim: true,
-        required: true,
+        required: false,
     },
     imgUrl :{
         type: String,
         trim: true,
-        required: true,
+        required: false,
     },
     contactInfo :{
         type: String,
@@ -20,32 +20,32 @@ const EventSchema = new Schema({
     event_date: {
         type: Date,
         trim: true,
-        required: true
+        required: false
     },
     created_on: {
         type: Date,
         trim: true,
-        required: true
+        required: false
     },
     Description: {
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     guideLines: {
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     Eventlocation: {
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     City :{
         type: String,
         trim:false ,
-        required: true
+        required: false
     },
     locationCorodiantes :{
         type :JSON,
@@ -53,12 +53,12 @@ const EventSchema = new Schema({
             latitude :String,
             longitude :String
         },
-        required:true
+        required:false
     },
     event_category: {
         type: [String],
         trim: true,
-        required: true
+        required: false
     },
     Tags: {
         type: [String],
@@ -68,12 +68,24 @@ const EventSchema = new Schema({
     UserProfileID: {
         type: String,
         trim :false,
-        required: true
+        required: false
     },
     aditionalImgOrVideo: {
         type: [String],
         trim :false,
-        required: true
+        required: false
+    },
+    JoinCount:{
+        type:Number,
+        required:false
+    },
+    reportCount:{
+        type:Number,
+        required:false
+    },
+    MaxCapacity:{
+        type:Number,
+        required:false
     }
 });
 module.exports = mongoose.model('Event', EventSchema)

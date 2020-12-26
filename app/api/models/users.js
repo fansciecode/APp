@@ -7,28 +7,28 @@ const UserSchema = new Schema({
     name: {
         type: String,
         trim: true,
-        required: true,
+        required: false,
     },
     email: {
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     mobileNumber: {
         type: String,
         trim: false,
-        required: true,
+        required: false,
     },
     dateofBirth: {
         type: String,
         trim: false,
-        required: true,
+        required: false,
 
     },
     OTP: {
         type: String,
         trim: false,
-        required: true
+        required: false
     },
     password: {
         type: String,
@@ -38,17 +38,29 @@ const UserSchema = new Schema({
     userProfile:{
         type: JSON,
         default : {
-            about : String, required :true,
-            socailprofilelink : String, required: true,
-            location : String,required: true,
-            eDuBackground : String,required: true,
-            workBackround : String,required: true,
-            imgUrl :String ,required : true ,
+            about : String, required :false,
+            socailprofilelink : String, required: false,
+            location : String,required: false,
+            eDuBackground : String,required: false,
+            workBackround : String,required: false,
+            imgUrl :String ,required : false ,
             interestsCat : {
-                catId : [String], required :true,
-            },required :true
+                catId : [String], required :false,
+            },required :false
         },
         trim:false,
+        required:false
+    },
+    EventsHosted:{
+        type:Number,
+        required:false
+    },
+    EventsAttened:{
+        type:Number,
+        required:false
+    },
+    Reportcount :{
+        type:Number,
         required:false
     }
 

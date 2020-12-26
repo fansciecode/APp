@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 var firebase = require('firebase');
+const EventModel = require('../models/Events');
 
 module.exports = {
     create: function (req, res, next) {
@@ -57,6 +58,7 @@ module.exports = {
     },
     publicProfile: function (req, res, next) {
         userModel.findById(req.body.user_id, function (err, response) {
+            console.log(response)
             if (err)
                 next(err);
             else {
@@ -70,7 +72,10 @@ module.exports = {
                         location: response.userProfile.location,
                         profession: response.userProfile.workBackround,
                         education: response.userProfile.eDuBackground,
-                        socailprofilelink: response.userProfile.socailprofilelink
+                        socailprofilelink: response.userProfile.socailprofilelink,
+                        InterestedCategories:response.userProfile.interestsCat,
+                        EventsHosted:response.EventsHosted,
+                        Eventsattened:response.EventsAttened
                     }
                 });
             }
@@ -80,11 +85,11 @@ module.exports = {
 
     },
     JoinEvent: function (req, res, next) {
-     var   EventId =req.body.eventId;
-      var  FromdeviceId =req.body.fromdeviceId;
-       var ToDeviceId = req.body.toDeviceId;
-       var FromProfileId = req.body.fromProfileId;
-      var  ToProfileId = req.body.toProfileId;
+        var EventId = req.body.eventId;
+        var FromdeviceId = req.body.fromdeviceId;
+        var ToDeviceId = req.body.toDeviceId;
+        var FromProfileId = req.body.fromProfileId;
+        var ToProfileId = req.body.toProfileId;
 
         notify.create({
                 eventId: EventId,
@@ -98,9 +103,35 @@ module.exports = {
                 if (err)
                     next(err);
                 else {
+                    EventModel.updateOne({_id:EventId},{$inc:{JoinCount:1}},function(err,res){
+                        if(err){
+                            console.log(err)
+                        }else{
+                            console.log(res)
+                        }
 
-                    firebase.database().ref('/Notifications').set({eventID:EventId,fromProfileId:FromProfileId,
-                        fromdeviceId:FromdeviceId,toDeviceId:ToDeviceId,toProfileId:ToProfileId});
+                    });
+                    userModel.updateOne({
+                        _id: FromProfileId
+                    }, {
+                        $inc: {
+                            EventsAttened: 1
+                        }
+                    }, function (err, res) {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            console.log(res)
+                        }
+    
+                    });
+                    firebase.database().ref('/Notifications').set({
+                        eventID: EventId,
+                        fromProfileId: FromProfileId,
+                        fromdeviceId: FromdeviceId,
+                        toDeviceId: ToDeviceId,
+                        toProfileId: ToProfileId
+                    });
                     res.json({
 
                         status: "success",
@@ -128,8 +159,11 @@ module.exports = {
             if (err)
                 next(err)
             else {
-                firebase.database().ref('/NotificationsResponse').set({notificationId:noitiyId,Status:status,
-                    messageStatus:messagestatus });
+                firebase.database().ref('/NotificationsResponse').set({
+                    notificationId: noitiyId,
+                    Status: status,
+                    messageStatus: messagestatus
+                });
                 res.json({
                     status: "success",
                     message: "notification updated succefully",
@@ -141,10 +175,29 @@ module.exports = {
         })
 
     },
+    notificationInfo: function (req, res, next) {
+        var notificationID = req.body.notifyId;
+
+        notify.findById(notificationID, function (err, response) {
+
+            console.log(response);
+            if (err)
+                next(err)
+            else {
+                res.json({
+                    status: "success",
+                    message: "found notification details",
+                    data: response
+                })
+            }
+        })
+    },
+
+    
     CreateChat: function (req, res, next) {
         var EventId = req.body.EventID;
         var senderId = req.body.senderID;
-        var isGroupmessage = (req.body.isgroupMessage ) ? 1:0 ;
+        var isGroupmessage = (req.body.isgroupMessage) ? 1 : 0;
         var participantsIds = req.body.participantIDs;
 
         message.create({
@@ -157,8 +210,14 @@ module.exports = {
                 if (err)
                     next(err)
                 else {
-                    firebase.database().ref('/createChat').set({eventID:EventId,sender:senderId,
-                        is_group_message: isGroupmessage,participants:{user:participantsIds}});
+                    firebase.database().ref('/createChat').set({
+                        eventID: EventId,
+                        sender: senderId,
+                        is_group_message: isGroupmessage,
+                        participants: {
+                            user: participantsIds
+                        }
+                    });
 
                     res.json({
                         status: "success",
@@ -198,9 +257,9 @@ module.exports = {
     },
     ChatMessage: function (req, res, next) {
         var chatID = req.body.ChatID;
-        var EventID =req.body.eventId;
+        var EventID = req.body.eventId;
         var senderID = req.body.senderID;
-        var touserID =req.body.toUserID;
+        var touserID = req.body.toUserID;
         var messagedetails = req.body.message;
 
         message.update({
@@ -219,8 +278,15 @@ module.exports = {
             if (err)
                 next(err)
             else {
-                firebase.database().ref('/chatMessages').set({eventID:EventID,ChatID:chatID,sender:senderID,
-                   messages: {message:messagedetails,user:touserID}});
+                firebase.database().ref('/chatMessages').set({
+                    eventID: EventID,
+                    ChatID: chatID,
+                    sender: senderID,
+                    messages: {
+                        message: messagedetails,
+                        user: touserID
+                    }
+                });
 
                 res.json({
                     status: "success",
@@ -259,7 +325,10 @@ module.exports = {
             if (err) {
                 next(err);
             } else {
-                if (bcrypt.compareSync(req.body.password, userInfo.password)) {
+                var userPass = (userInfo.passowrd) ? userInfo.password : "";
+                var result = bcrypt.compareSync(req.body.password, userPass);
+
+                if (result) {
                     const token = jwt.sign({
                         id: userInfo._id
                     }, req.app.get('secretKey'), {
